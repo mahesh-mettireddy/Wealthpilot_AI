@@ -1,5 +1,7 @@
 # WealthPilot AI - Digital Wealth Advisory
 
+🚀 **Live Application:** [http://wealthpilot-env.eba-nxyswcfx.us-east-1.elasticbeanstalk.com](http://wealthpilot-env.eba-nxyswcfx.us-east-1.elasticbeanstalk.com)
+
 This project is a single-instance MVP for WealthPilot AI, providing digital wealth advisory services.
 
 ## Prerequisites

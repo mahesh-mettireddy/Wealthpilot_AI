@@ -5,4 +5,4 @@ spring:
     anthropic:
       api-key: ${ANTHROPIC_API_KEY:REPLACE_ME}
 server:
-  port: 8080
+  port: ${PORT:5000}
