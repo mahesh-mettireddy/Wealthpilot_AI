@@ -45,6 +45,12 @@ public class AdvisoryController {
         return ResponseEntity.ok(successResponse(response));
     }
 
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String, Object>> chat(@RequestBody ChatRequest request) {
+        ChatResponse response = portfolioAdvisorService.chatWithAdvisor(request);
+        return ResponseEntity.ok(successResponse(response));
+    }
+
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> healthCheck() {
         return ResponseEntity.ok(successResponse(Map.of("status", "UP")));

@@ -136,4 +136,36 @@ public class PortfolioAdvisorService {
             list.add(new RecommendationResponse.RecommendedFund(subset.get(0).getFundId(), subset.get(0).getName(), totalPct));
         }
     }
+
+    public com.leostar.wealthpilot.model.ChatResponse chatWithAdvisor(com.leostar.wealthpilot.model.ChatRequest request) {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("You are the WealthPilot Conversational Co-pilot, a helpful and knowledgeable financial advisor. ");
+        prompt.append("You have just generated the following portfolio for the user based on their risk profile:\n\n");
+        
+        try {
+            prompt.append("Risk Profile: ").append(objectMapper.writeValueAsString(request.getRiskProfile())).append("\n");
+            prompt.append("Recommended Portfolio: ").append(objectMapper.writeValueAsString(request.getRecommendedPortfolio())).append("\n");
+            prompt.append("Projection: ").append(objectMapper.writeValueAsString(request.getProjection())).append("\n\n");
+        } catch (Exception e) {
+            prompt.append("Context data parsing failed.\n\n");
+        }
+
+        prompt.append("Conversation History:\n");
+        if (request.getHistory() != null) {
+            for (com.leostar.wealthpilot.model.ChatRequest.ChatMessage msg : request.getHistory()) {
+                prompt.append(msg.getRole().toUpperCase()).append(": ").append(msg.getContent()).append("\n");
+            }
+        }
+        
+        prompt.append("\nUSER: ").append(request.getMessage()).append("\n");
+        prompt.append("ASSISTANT (Respond clearly and concisely, referencing the funds and projections above when relevant):");
+
+        try {
+            String aiRaw = aiAdvisorClient.getRecommendation(prompt.toString());
+            return new com.leostar.wealthpilot.model.ChatResponse(aiRaw.trim());
+        } catch (Exception e) {
+            System.err.println("Chat AI call failed: " + e.getMessage());
+            return new com.leostar.wealthpilot.model.ChatResponse("I'm sorry, I'm having trouble connecting to my advisory engine right now. Please try asking again in a moment.");
+        }
+    }
 }

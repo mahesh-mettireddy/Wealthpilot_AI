@@ -142,6 +142,23 @@
         </section>
     </main>
 
+    <!-- Floating Chat Widget -->
+    <div id="chat-widget" class="chat-widget hidden">
+        <div class="chat-header">
+            <h3>WealthPilot Co-pilot</h3>
+            <button id="btn-toggle-chat" class="btn-icon">_</button>
+        </div>
+        <div id="chat-body" class="chat-body">
+            <div class="chat-message assistant">
+                <p>Hi! I'm your AI Co-pilot. Do you have any questions about the portfolio I just generated for you?</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Ask about your portfolio..." autocomplete="off">
+            <button id="btn-send-chat" class="btn-primary">Send</button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

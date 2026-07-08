@@ -86,6 +86,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const projectData = await projectRes.json();
             if (!projectData.success) throw new Error(projectData.error || 'Failed to calculate projection');
 
+            chatContext.riskProfile = riskData.data;
+            chatContext.recommendedPortfolio = recommendData.data;
+            chatContext.projection = projectData.data;
+            chatContext.history = [];
+            
+            // Show chat widget and results
+            chatWidget.classList.remove('hidden');
+            chatWidget.classList.remove('collapsed');
+            
             renderResults(riskCategory, recommendData.data, projectData.data);
             showSection('results');
 
@@ -191,5 +200,84 @@ document.addEventListener('DOMContentLoaded', () => {
             currency: 'INR',
             maximumFractionDigits: 0
         }).format(num);
+    }
+
+    // --- Chat Co-pilot Logic ---
+    let chatContext = {
+        riskProfile: null,
+        recommendedPortfolio: null,
+        projection: null,
+        history: []
+    };
+
+    const chatWidget = document.getElementById('chat-widget');
+    const btnToggleChat = document.getElementById('btn-toggle-chat');
+    const chatBody = document.getElementById('chat-body');
+    const chatInput = document.getElementById('chat-input');
+    const btnSendChat = document.getElementById('btn-send-chat');
+
+    btnToggleChat.addEventListener('click', () => {
+        chatWidget.classList.toggle('collapsed');
+        btnToggleChat.textContent = chatWidget.classList.contains('collapsed') ? '^' : '_';
+    });
+
+    btnSendChat.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+    });
+
+    async function sendChatMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        appendMessage('user', text);
+        chatInput.value = '';
+        chatInput.disabled = true;
+        btnSendChat.disabled = true;
+
+        // Show typing indicator
+        const typingId = 'typing-' + Date.now();
+        appendMessage('assistant', '...', typingId);
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text,
+                    history: chatContext.history,
+                    riskProfile: chatContext.riskProfile,
+                    recommendedPortfolio: chatContext.recommendedPortfolio,
+                    projection: chatContext.projection
+                })
+            });
+            
+            const data = await res.json();
+            document.getElementById(typingId).remove();
+
+            if (data.success && data.data && data.data.reply) {
+                appendMessage('assistant', data.data.reply);
+                chatContext.history.push({ role: 'user', content: text });
+                chatContext.history.push({ role: 'assistant', content: data.data.reply });
+            } else {
+                appendMessage('assistant', 'Sorry, I encountered an error answering that.');
+            }
+        } catch (err) {
+            document.getElementById(typingId).remove();
+            appendMessage('assistant', 'Network error while contacting the advisor.');
+        } finally {
+            chatInput.disabled = false;
+            btnSendChat.disabled = false;
+            chatInput.focus();
+        }
+    }
+
+    function appendMessage(role, text, id = null) {
+        const div = document.createElement('div');
+        div.className = `chat-message ${role}`;
+        if (id) div.id = id;
+        div.innerHTML = `<p>${text}</p>`;
+        chatBody.appendChild(div);
+        chatBody.scrollTop = chatBody.scrollHeight;
     }
 });
