@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-@Component
+// @Component - Disabled in favor of GeminiAdvisorClient
 public class AnthropicAdvisorClient implements AiAdvisorClient {
 
     @Value("${spring.ai.anthropic.api-key:}")
