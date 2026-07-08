@@ -2,23 +2,29 @@
 
 🚀 **Live Application:** [http://wealthpilot-env.eba-nxyswcfx.us-east-1.elasticbeanstalk.com](http://wealthpilot-env.eba-nxyswcfx.us-east-1.elasticbeanstalk.com)
 
-This project is a single-instance MVP for WealthPilot AI, providing digital wealth advisory services.
+WealthPilot AI is a next-generation digital wealth advisory platform designed for modern investors. It leverages Google's Gemini AI API to provide personalized portfolio recommendations, financial projections, and an interactive conversational Co-pilot that understands your entire financial context.
 
-## Prerequisites
+## 🌟 Key Features
+- **AI-Powered Risk Profiling:** Determine your exact risk tolerance (Conservative, Moderate, Aggressive).
+- **Personalized Portfolio Generation:** Gemini AI analyzes your profile, goals, horizon, and monthly investment to generate a custom-tailored mutual fund portfolio dynamically.
+- **Conversational AI Co-pilot:** A floating chat widget that allows you to ask the AI questions directly about your generated portfolio. The Co-pilot has full context of your recommended funds, projections, and chat history.
+- **Dynamic AI Model Resolution:** The backend automatically maps your Google API key to the correct Gemini model (e.g. `gemini-1.5-flash`), fully supporting both legacy `AIza...` and modern `AQ...` authentication keys.
+- **Real-time Financial Projections:** Visualized growth charts over your investment horizon.
+
+## 🛠 Prerequisites
 - Java 17
 - Maven 3.8+ (or use the included wrapper)
-- Anthropic API Key for the Portfolio Advisor AI
+- A valid **Google Gemini API Key**
 
-## Configuration
+## ⚙️ Configuration
 
-1. Locate the `.env` file at the root of the project. (If it doesn't exist, create it based on `application-local.yml` or standard format).
-2. Set your Anthropic API Key:
+1. Set your Gemini API Key locally for development:
    ```env
-   ANTHROPIC_API_KEY=your-actual-anthropic-api-key
+   GEMINI_API_KEY=your-actual-gemini-api-key
    ```
-   **DO NOT** commit this file to source control. It is already included in `.gitignore`.
+   **DO NOT** commit your API key to source control.
 
-## Running Locally
+## 💻 Running Locally
 
 To run the application locally, use the Maven wrapper:
 
@@ -26,11 +32,11 @@ To run the application locally, use the Maven wrapper:
 ./mvnw clean spring-boot:run
 ```
 
-Once the application starts, navigate to `http://localhost:8080` in your web browser to access the interactive dashboard.
+Navigate to `http://localhost:8080` in your web browser to access the dashboard.
 
-## Deployment to AWS Elastic Beanstalk
+## ☁️ Deployment to AWS Elastic Beanstalk
 
-This application is ready to be deployed to AWS Elastic Beanstalk (Java 17 Corretto platform).
+This application is deployed on AWS Elastic Beanstalk (Java 17 Corretto platform).
 
 ### Deployment Steps:
 
@@ -38,24 +44,15 @@ This application is ready to be deployed to AWS Elastic Beanstalk (Java 17 Corre
    ```bash
    ./mvnw clean package
    ```
-2. Initialize the Elastic Beanstalk environment (only needed the first time):
-   ```bash
-   eb init -p corretto-17 wealthpilot-ai
-   ```
-3. Create the environment (only needed the first time):
-   ```bash
-   eb create wealthpilot-env
-   ```
-4. Set the Anthropic API key securely in the Elastic Beanstalk environment:
-   ```bash
-   eb setenv ANTHROPIC_API_KEY=your-actual-anthropic-api-key
-   ```
-5. Deploy the application:
+2. Deploy the application:
    ```bash
    eb deploy
    ```
-6. Verify the deployment:
+3. Set the Gemini API key securely in the Elastic Beanstalk console:
+   - Go to **Configuration -> Updates, monitoring, and routing**.
+   - Add an environment property: `GEMINI_API_KEY = [Your Key]`.
+   - Click Apply.
+4. Verify the deployment:
    ```bash
    eb open
    ```
-   The application will automatically perform health checks against `/api/health`.
