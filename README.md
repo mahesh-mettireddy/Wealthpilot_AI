@@ -32,7 +32,7 @@ To run the application locally, use the Maven wrapper:
 ./mvnw clean spring-boot:run
 ```
 
-Navigate to `http://localhost:8080` in your web browser to access the dashboard.
+Navigate to `http://localhost:5000` in your web browser to access the dashboard.
 
 ## ☁️ Deployment to AWS Elastic Beanstalk
 
