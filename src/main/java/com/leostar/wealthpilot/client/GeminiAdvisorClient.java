@@ -19,6 +19,44 @@ public class GeminiAdvisorClient implements AiAdvisorClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private String resolvedModelName = null;
+
+    private synchronized String getModelName() {
+        if (resolvedModelName != null) return resolvedModelName;
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models?key=" + apiKey;
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            if (response.getBody() != null && response.getBody().containsKey("models")) {
+                List<Map<String, Object>> models = (List<Map<String, Object>>) response.getBody().get("models");
+                
+                // First pass: try to find a 1.5 flash model
+                for (Map<String, Object> model : models) {
+                    String name = (String) model.get("name");
+                    List<String> methods = (List<String>) model.get("supportedGenerationMethods");
+                    if (name != null && name.contains("gemini-1.5-flash") && methods != null && methods.contains("generateContent")) {
+                        resolvedModelName = name.replace("models/", "");
+                        return resolvedModelName;
+                    }
+                }
+                
+                // Second pass: try to find ANY gemini model supporting generateContent
+                for (Map<String, Object> model : models) {
+                    String name = (String) model.get("name");
+                    List<String> methods = (List<String>) model.get("supportedGenerationMethods");
+                    if (name != null && name.contains("gemini") && methods != null && methods.contains("generateContent")) {
+                        resolvedModelName = name.replace("models/", "");
+                        return resolvedModelName;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to fetch models list: " + e.getMessage());
+        }
+        // Fallback to standard alias
+        resolvedModelName = "gemini-1.5-flash-latest";
+        return resolvedModelName;
+    }
+
     @Override
     public String getRecommendation(String prompt) {
         if (apiKey == null || apiKey.trim().isEmpty() || "REPLACE_ME".equals(apiKey)) {
@@ -27,6 +65,7 @@ public class GeminiAdvisorClient implements AiAdvisorClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-goog-api-key", apiKey);
 
         Map<String, Object> body = Map.of(
             "contents", List.of(
@@ -39,7 +78,8 @@ public class GeminiAdvisorClient implements AiAdvisorClient {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         
         try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+            String model = getModelName();
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
 
             Map<String, Object> respBody = response.getBody();
