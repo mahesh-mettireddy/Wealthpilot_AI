@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WealthPilot AI - Digital Wealth Advisory</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <h1>WealthPilot AI</h1>
+            <p>Your intelligent digital wealth advisor.</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Questionnaire Section -->
+        <section id="questionnaire-section" class="card active">
+            <h2>Let's build your financial profile</h2>
+            <form id="profiler-form">
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" min="18" max="75" required placeholder="e.g. 30">
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyIncome">Monthly Income (INR)</label>
+                    <input type="number" id="monthlyIncome" name="monthlyIncome" min="1" required placeholder="e.g. 85000">
+                </div>
+
+                <div class="form-group">
+                    <label for="goalType">Primary Financial Goal</label>
+                    <select id="goalType" name="goalType" required>
+                        <option value="">Select a goal</option>
+                        <option value="RETIREMENT">Retirement</option>
+                        <option value="HOME_PURCHASE">Home Purchase</option>
+                        <option value="CHILD_EDUCATION">Child Education</option>
+                        <option value="WEALTH_GROWTH">Wealth Growth</option>
+                        <option value="EMERGENCY_FUND">Emergency Fund</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="investmentHorizonYears">Investment Horizon (Years)</label>
+                    <input type="number" id="investmentHorizonYears" name="investmentHorizonYears" min="1" max="40" required placeholder="e.g. 10">
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyInvestmentAmount">Monthly Investment (INR)</label>
+                    <input type="number" id="monthlyInvestmentAmount" name="monthlyInvestmentAmount" min="1" required placeholder="e.g. 10000">
+                </div>
+
+                <div class="form-group">
+                    <label for="riskComfort">Risk Comfort Level</label>
+                    <select id="riskComfort" name="riskComfort" required>
+                        <option value="">Select comfort level</option>
+                        <option value="LOW">Low (Prefer safety over high returns)</option>
+                        <option value="MEDIUM">Medium (Comfortable with moderate fluctuations)</option>
+                        <option value="HIGH">High (Willing to take risks for high returns)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">Generate My Portfolio</button>
+            </form>
+        </section>
+
+        <!-- Loading State -->
+        <section id="loading-section" class="card hidden">
+            <div class="spinner"></div>
+            <h2>Analyzing your profile...</h2>
+            <p>Our AI is crafting a personalized investment strategy for you.</p>
+        </section>
+
+        <!-- Error State -->
+        <section id="error-section" class="card hidden">
+            <h2>Oops! Something went wrong.</h2>
+            <p id="error-message" class="error-text"></p>
+            <button id="btn-retry" class="btn-secondary">Try Again</button>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="hidden">
+            <div class="results-header">
+                <h2>Your Personalized Portfolio</h2>
+                <div id="risk-badge" class="badge">MODERATE</div>
+            </div>
+
+            <div class="results-grid">
+                <!-- Rationale -->
+                <div class="card rationale-card">
+                    <h3>Advisor Rationale</h3>
+                    <p id="rationale-text"></p>
+                </div>
+
+                <!-- Allocation Chart -->
+                <div class="card chart-card">
+                    <h3>Asset Allocation</h3>
+                    <div class="chart-container">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recommended Funds -->
+                <div class="card funds-card">
+                    <h3>Recommended Funds</h3>
+                    <ul id="funds-list" class="funds-list">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Projection Chart -->
+                <div class="card projection-card">
+                    <h3>Growth Projection</h3>
+                    <div class="projection-summary">
+                        <div class="stat">
+                            <span class="label">Total Invested</span>
+                            <strong id="stat-invested">₹0</strong>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Projected Corpus</span>
+                            <strong id="stat-corpus">₹0</strong>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Exp. Return</span>
+                            <strong id="stat-return">0%</strong>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="projectionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="btn-start-over" class="btn-outline">Start Over</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
